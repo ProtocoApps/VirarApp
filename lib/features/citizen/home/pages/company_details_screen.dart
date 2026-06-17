@@ -2,7 +2,120 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../profile/pages/citizen_profile_screen.dart';
+import '../../../../../features/products/presentation/pages/produtos_list_screen.dart';
+
+const Map<String, List<String>> _categorySubcategories = {
+  'Serviços Funerários': [
+    'Funerárias completas',
+    'Tanatopraxia',
+    'Embalsamamento',
+    'Pacotes funerários',
+    'Funeral Econômico',
+  ],
+  'Velório e Cerimônia': [
+    'Salas de velório',
+    'Capelas mortuárias',
+    'Ornamentação',
+    'Música para cerimônia',
+    'Transmissão online',
+  ],
+  'Flores e Homenagens': [
+    'Lista de empresas',
+  ],
+  'Cemitério e Sepultamento': [
+    'Cemitérios',
+    'Jazigos',
+    'Sepultamento',
+    'Cremação',
+    'Columbários',
+    'Nichos para cinzas',
+  ],
+  'Apoio à Família': [
+    'Psicólogo especializado em luto',
+    'Terapeuta especializado em luto',
+    'Grupos de apoio ao luto',
+  ],
+  'Documentação e Burocracia': [
+    'Assessoria documental pós-óbito',
+    'Inventário judicial',
+    'Inventário extrajudicial',
+    'Pensão por morte',
+    'Regularização de documentos',
+    'Cartórios',
+  ],
+  'Serviços Pós-Falecimento': [
+    'Limpeza residencial',
+    'Organização de pertences',
+    'Retirada de móveis',
+    'Frete e transporte',
+    'Guarda de bens',
+  ],
+  'Manutenção de Túmulos': [
+    'Limpeza e conservação',
+    'Colocação de flores',
+    'Manutenção periódica',
+  ],
+  'Transporte Funerário': [
+    'Traslado municipal (dentro da cidade)',
+    'Traslado intermunicipal (entre cidades)',
+    'Traslado interestadual (entre estados)',
+    'Traslado internacional (entre países)',
+    'Repatriação internacional (retorno ao país de origem)',
+  ],
+  'Buffet para Velório e Cerimônias': [
+    'Lista de empresas',
+  ],
+  'Transmissão ao Vivo': [
+    'Transmissão de velório ao vivo',
+    'Transmissão de cerimônia religiosa',
+    'Gravação da cerimônia',
+    'Produção de vídeo-homenagem',
+    'Equipamentos audiovisuais',
+  ],
+  'Memorial Digital': [
+    'Página memorial',
+    'Álbum de fotos',
+    'Vídeos de homenagem',
+    'Livro de condolências',
+    'QR Code memorial',
+  ],
+  'Memoriais e Lápides': [
+    'Mármore',
+    'Granito',
+    'Gravação de nomes',
+    'Recuperação de inscrições',
+    'Troca de placas',
+    'Restauração de lápides',
+  ],
+  'Planejamento Antecipado': [
+    'Plano funerário',
+    'Seguro funeral',
+    'Compra de jazigo',
+    'Planejamento patrimonial',
+    'Testamento',
+    'Diretivas antecipadas de vontade',
+  ],
+  'Artigos Religiosos e Espirituais': [
+    'Artigos católicos',
+    'Artigos evangélicos',
+    'Artigos espíritas',
+    'Artigos de Umbanda',
+    'Artigos de Candomblé',
+    'Artigos budistas',
+    'Artigos judaicos',
+    'Artigos islâmicos',
+    'Outros artigos religiosos e espirituais',
+  ],
+  'Serviços Funerários para Pets': [
+    'Cremação com devolução das cinzas',
+    'Cremação sem devolução das cinzas',
+    'Sepultamento para pets',
+    'Transporte funerário para pets',
+    'Memorial para pets',
+  ],
+};
 
 class CompanyDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> company;
@@ -20,6 +133,7 @@ class CompanyDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
+      floatingActionButton: const GlobalZoomFAB(),
       body: CustomScrollView(
         slivers: [
           // App Bar com imagem
@@ -162,6 +276,49 @@ class CompanyDetailsScreen extends StatelessWidget {
                   ),
                   
                   const SizedBox(height: 20),
+
+                  // Subcategorias da categoria principal
+                  if (_categorySubcategories[company['category']] != null) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      'Subcategorias',
+                      style: TextStyle(
+                        color: AppColors.gold.withOpacity(0.85),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 44,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _categorySubcategories[company['category']]?.length ?? 0,
+                        separatorBuilder: (context, i) => const SizedBox(width: 8),
+                        itemBuilder: (context, i) {
+                          final sub = _categorySubcategories[company['category']]![i];
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: AppColors.gold.withOpacity(0.10),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: AppColors.gold.withOpacity(0.25)),
+                            ),
+                            child: Text(
+                              sub,
+                              style: const TextStyle(
+                                color: AppColors.gold,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                   
                   // Rating e reviews
                   Row(
@@ -198,6 +355,106 @@ class CompanyDetailsScreen extends StatelessWidget {
                   ),
                   
                   const SizedBox(height: 24),
+                  
+                  // Botão Ver Produtos e Serviços - DESTAQUE
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.gold,
+                          AppColors.lightGold,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.gold.withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Semantics(
+                      button: true,
+                      label: 'Ver produtos e serviços',
+                      hint: 'Toque para ver os produtos e serviços oferecidos por ${company['name']}',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            HapticFeedback.mediumImpact();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProdutosListScreen(
+                                  funerariaId: int.parse(company['id'].toString()),
+                                  funerariaNome: company['name'] as String,
+                                ),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.deepBlack.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.shopping_bag,
+                                    color: AppColors.deepBlack,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Ver Produtos e Serviços',
+                                        style: TextStyle(
+                                          color: AppColors.deepBlack,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Confira nosso catálogo completo',
+                                        style: TextStyle(
+                                          color: AppColors.deepBlack,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: AppColors.deepBlack,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 32),
                   
                   // Descrição
                   Text(
@@ -493,6 +750,7 @@ class CompanyDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
+      floatingActionButton: const GlobalZoomFAB(),
       bottomNavigationBar: _buildAppBottomNavigation(context),
       body: SingleChildScrollView(
         child: Column(
@@ -711,6 +969,99 @@ class CompanyDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Botão Ver Produtos e Serviços - DESTAQUE PREMIUM
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          premiumGoldStrong,
+                          premiumGold,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: premiumGoldStrong.withOpacity(0.5),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          HapticFeedback.mediumImpact();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProdutosListScreen(
+                                funerariaId: int.parse(company['id'].toString()),
+                                funerariaNome: company['name'] as String,
+                              ),
+                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(16),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.deepBlack.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.shopping_bag,
+                                  color: AppColors.deepBlack,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Ver Produtos e Serviços',
+                                      style: TextStyle(
+                                        color: AppColors.deepBlack,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Confira nosso catálogo completo',
+                                      style: TextStyle(
+                                        color: AppColors.deepBlack,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                color: AppColors.deepBlack,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
                   _buildEliteSectionTitle('Sobre o Local'),
                   const SizedBox(height: 14),
                   Text(
@@ -1069,7 +1420,7 @@ class CompanyDetailsScreen extends StatelessWidget {
   void _onNavTap(BuildContext context, int index) {
     HapticFeedback.lightImpact();
     if (index == 0) {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/citizen_home');
     } else if (index == 1) {
       Navigator.pushReplacementNamed(context, '/search');
     } else if (index == 2) {

@@ -1,35 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
+import '../../../../../core/providers/text_scale_provider.dart';
+import 'package:video_player/video_player.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../../../../core/localization/app_language.dart';
 import '../../../../../core/providers/app_language_provider.dart';
 import '../../../search/presentation/pages/search_screen.dart';
 
 class AccessibilityHomeScreen extends StatelessWidget {
-  const AccessibilityHomeScreen({super.key});
+  const AccessibilityHomeScreen({super.key, this.showBottomNavigation = true});
+
+  final bool showBottomNavigation;
 
   static const List<_ServiceItem> _services = [
-    _ServiceItem(Icons.local_hospital_outlined, 'Serviços\nFunerários', 'Funeral\nServices', 'Servicios\nFunerarios', 'Serviços Funerários', 'assets/images/1.Serviços Funerários .gif'),
-    _ServiceItem(Icons.nights_stay_outlined, 'Velório', 'Wake', 'Velorio', 'Velório e Cerimônia', 'assets/images/2.Velório e cerimônia.gif'),
-    _ServiceItem(Icons.local_florist_outlined, 'Flores', 'Flowers', 'Flores', 'Flores e Homenagens', 'assets/images/3.Flores e homenagens.gif'),
-    _ServiceItem(Icons.landscape_outlined, 'Cemitério', 'Cemetery', 'Cementerio', 'Cemitério e Sepultamento', 'assets/images/4.Cemitério e sepultamento.gif'),
-    _ServiceItem(Icons.description_outlined, 'Documentação', 'Documents', 'Documentación', 'Serviços Funerários', 'assets/images/6.Documentação e burocracia.gif'),
-    _ServiceItem(Icons.folder_open_outlined, 'Doc. e\nBurocracia', 'Docs &\nBureaucracy', 'Docs y\nBurocracia', 'Serviços Funerários', 'assets/images/6.Documentação e burocracia.gif'),
+   _ServiceItem(Icons.local_hospital_outlined, 'Serviços\nFunerários', 'Funeral\nServices', 'Servicios\nFunerarios', 'Serviços Funerários', 'assets/images/Serviço funerária. Oficial.gif'),
+    _ServiceItem(Icons.inventory_2_outlined, 'Velório', 'Wake', 'Velorio', 'Velório e Cerimônia', 'assets/images/2.Velório e cerimônia.gif'),
+    _ServiceItem(Icons.local_florist_outlined, 'Flores e\nHomenagens', 'Flowers', 'Flores', 'Flores e Homenagens', 'assets/images/3.Flores e homenagens.gif'),
+    _ServiceItem(Icons.church_outlined, 'Cemitério', 'Cemetery', 'Cementerio', 'Cemitério e Sepultamento', 'assets/images/4.Cemitério e sepultamento.gif'),
+    // _ServiceItem(Icons.description_outlined, 'Documentação', 'Documents', 'Documentación', 'Serviços Funerários', 'assets/images/6.Documentação e burocracia.gif'),
+    _ServiceItem(Icons.folder_open_outlined, 'Documentação\ne Burocracia', 'Docs &\nBureaucracy', 'Docs y\nBurocracia', 'Serviços Funerários', 'assets/images/6.Documentação e burocracia.gif'),
     _ServiceItem(Icons.favorite_border, 'Apoio à\nFamília', 'Family\nSupport', 'Apoyo a\nFamilia', 'Velório e Cerimônia', 'assets/images/5.Apoio à família.gif'),
-    _ServiceItem(Icons.groups_outlined, 'Família', 'Family', 'Familia', 'Velório e Cerimônia', 'assets/images/5.Apoio à família.gif'),
-    _ServiceItem(Icons.airport_shuttle_outlined, 'Transporte', 'Transport', 'Transporte', 'Serviços Funerários', 'assets/images/9.Transporte funerário.gif'),
+    // _ServiceItem(Icons.groups_outlined, 'Família', 'Family', 'Familia', 'Velório e Cerimônia', 'assets/images/5.Apoio à família.gif'),
+    // _ServiceItem(Icons.airport_shuttle_outlined, 'Transporte', 'Transport', 'Transporte', 'Serviços Funerários', 'assets/images/9.Transporte funerário.gif'),
     _ServiceItem(Icons.local_shipping_outlined, 'Transporte\nFunerário', 'Funeral\nTransport', 'Transporte\nFunerario', 'Serviços Funerários', 'assets/images/9.Transporte funerário.gif'),
-    _ServiceItem(Icons.spa_outlined, 'Pós-\nFalecimento', 'Post-\nPassage', 'Post-\nFallecimiento', 'Cemitério e Sepultamento', 'assets/images/7.Serviços pós-falecimento.gif'),
+    // _ServiceItem(Icons.spa_outlined, 'Pós-\nFalecimento', 'Post-\nPassage', 'Post-\nFallecimiento', 'Cemitério e Sepultamento', 'assets/images/7.Serviços pós-falecimento.gif'),
     _ServiceItem(Icons.history_toggle_off_outlined, 'Serviços Pós-\nFalecimento', 'Post-Death\nServices', 'Servicios Post-\nFallecimiento', 'Cemitério e Sepultamento', 'assets/images/7.Serviços pós-falecimento.gif'),
-    _ServiceItem(Icons.build_outlined, 'Manutenção', 'Maintenance', 'Mantenimiento', 'Cemitério e Sepultamento', 'assets/images/8.Manutenção de túmulos.gif'),
+    // _ServiceItem(Icons.build_outlined, 'Manutenção', 'Maintenance', 'Mantenimiento', 'Cemitério e Sepultamento', 'assets/images/8.Manutenção de túmulos.gif'),
     _ServiceItem(Icons.handyman_outlined, 'Manutenção\nde Túmulos', 'Grave\nMaintenance', 'Mantenimiento\nde Tumbas', 'Cemitério e Sepultamento', 'assets/images/8.Manutenção de túmulos.gif'),
-    _ServiceItem(Icons.auto_stories_outlined, 'Memorial', 'Memorial', 'Memorial', 'Cemitério e Sepultamento', 'assets/images/12.Memorial digital.gif'),
+    // _ServiceItem(Icons.auto_stories_outlined, 'Memorial', 'Memorial', 'Memorial', 'Cemitério e Sepultamento', 'assets/images/12.Memorial digital.gif'),
     _ServiceItem(Icons.memory_outlined, 'Memorial\nDigital', 'Digital\nMemorial', 'Memorial\nDigital', 'Cemitério e Sepultamento', 'assets/images/12.Memorial digital.gif'),
     _ServiceItem(Icons.account_balance_outlined, 'Memoriais\ne Lápides', 'Memorials\nand Headstones', 'Memoriales\ny Lápidas', 'Cemitério e Sepultamento', 'assets/images/13.Memoriais e lápides.gif'),
-    _ServiceItem(Icons.event_note_outlined, 'Planejamento', 'Planning', 'Planificación', 'Serviços Funerários', 'assets/images/14.Planejamento antecipado.gif'),
+    // _ServiceItem(Icons.event_note_outlined, 'Planejamento', 'Planning', 'Planificación', 'Serviços Funerários', 'assets/images/14.Planejamento antecipado.gif'),
     _ServiceItem(Icons.event_available_outlined, 'Planejamento\nAntecipado', 'Advance\nPlanning', 'Planificación\nAnticipada', 'Serviços Funerários', 'assets/images/14.Planejamento antecipado.gif'),
     _ServiceItem(Icons.restaurant_outlined, 'Buffet para\nVelório', 'Buffet for\nWake', 'Buffet para\nVelorio', 'Velório e Cerimônia', 'assets/images/10.Buffet para Velório e Cerimônias.gif'),
     _ServiceItem(Icons.volunteer_activism_outlined, 'Assistência\nSocial', 'Social\nSupport', 'Asistencia\nSocial', 'Velório e Cerimônia', 'assets/images/11.Assistência social.gif'),
+    _ServiceItem(Icons.pets_outlined, 'Serviços\nFunerários\npara Pets', 'Pet Funeral\nServices', 'Servicios Funerarios\npara Mascotas', 'Serviços Funerários', 'assets/images/Serviço funerária Pets Oficial.gif'),
   ];
 
   String _label(_ServiceItem item, AppLanguage lang) {
@@ -45,10 +51,11 @@ class AccessibilityHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = Provider.of<AppLanguageProvider>(context).currentLanguage;
+    final lang = provider.Provider.of<AppLanguageProvider>(context).currentLanguage;
 
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
+      floatingActionButton: const GlobalZoomFAB(),
       body: Stack(
         children: [
           // Background image with overlay
@@ -102,46 +109,56 @@ class AccessibilityHomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: showBottomNavigation ? _buildBottomNavigation() : null,
+    );
+  }
+
+  Widget _buildBottomNavigation() {
+    return Semantics(
+      label: 'Barra de navegação inferior',
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.deepBlack,
+          border: Border(
+            top: BorderSide(color: AppColors.gold.withOpacity(0.3)),
+          ),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _BottomNavItem(icon: Icons.map_outlined, label: 'Mapa'),
+                _BottomNavItem(icon: Icons.person, label: 'Perfil'),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   // ── HEADER ────────────────────────────────────────────────────────────────
   Widget _buildHeader(BuildContext context, AppLanguage lang) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // back + exit row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false),
-              child: Text(
-                lang == AppLanguage.english
-                    ? 'Exit'
-                    : lang == AppLanguage.spanish
-                        ? 'Salir'
-                        : 'Sair',
-                style: const TextStyle(
-                  color: AppColors.gold,
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-            ),
-          ],
-        ),
-
         const SizedBox(height: 22),
 
         // Gold divider glow line top
-        Container(
-          height: 1.5,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Colors.transparent,
-              AppColors.gold.withOpacity(0.7),
-              Colors.transparent,
-            ]),
+        SizedBox(
+          width: 220,
+          child: Container(
+            height: 1.5,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+                Colors.transparent,
+                AppColors.gold.withOpacity(0.7),
+                Colors.transparent,
+              ]),
+            ),
           ),
         ),
 
@@ -163,29 +180,33 @@ class AccessibilityHomeScreen extends StatelessWidget {
 
         Text(
           lang == AppLanguage.english
-              ? 'Humanized Attendance 24h'
+              ? 'Atendimento com acolhimento e cuidado'
               : lang == AppLanguage.spanish
-                  ? 'Atención Humanizada 24h'
-                  : 'Atendimento Humanizado 24h',
+                  ? 'Atendimento com acolhimento e cuidado'
+                  : 'Atendimento com acolhimento e cuidado',
           style: TextStyle(
             color: AppColors.softWhite.withOpacity(0.80),
-            fontSize: 14,
+            fontSize: 12,
             fontFamily: 'Poppins',
-            letterSpacing: 0.5,
+            height: 1.5,
           ),
+          textAlign: TextAlign.center,
         ),
 
         const SizedBox(height: 18),
 
         // Gold divider glow line bottom
-        Container(
-          height: 1.5,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Colors.transparent,
-              AppColors.gold.withOpacity(0.7),
-              Colors.transparent,
-            ]),
+        SizedBox(
+          width: 220,
+          child: Container(
+            height: 1.5,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+                Colors.transparent,
+                AppColors.gold.withOpacity(0.7),
+                Colors.transparent,
+              ]),
+            ),
           ),
         ),
       ],
@@ -230,7 +251,7 @@ class AccessibilityHomeScreen extends StatelessWidget {
         crossAxisCount: 4,
         crossAxisSpacing: 10,
         mainAxisSpacing: 16,
-        childAspectRatio: 0.72,
+        childAspectRatio: 0.64,
       ),
       itemCount: _services.length,
       itemBuilder: (context, index) {
@@ -290,7 +311,9 @@ class AccessibilityHomeScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(18),
-                  child: Image.asset(item.gifAssetPath, fit: BoxFit.contain),
+                  child: item.gifAssetPath.endsWith('.mp4')
+                      ? _VideoPlayerWidget(videoPath: item.gifAssetPath)
+                      : Image.asset(item.gifAssetPath, fit: BoxFit.contain),
                 ),
               ],
             ),
@@ -368,8 +391,8 @@ class _ServiceTile extends StatelessWidget {
                       onTap: onGifTap,
                       borderRadius: BorderRadius.circular(16),
                       child: Ink(
-                        width: 24,
-                        height: 24,
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
                           color: AppColors.deepBlack.withOpacity(0.88),
                           borderRadius: BorderRadius.circular(16),
@@ -382,7 +405,7 @@ class _ServiceTile extends StatelessWidget {
                           child: Icon(
                             Icons.sign_language,
                             color: AppColors.gold,
-                            size: 13,
+                            size: 18,
                           ),
                         ),
                       ),
@@ -396,16 +419,102 @@ class _ServiceTile extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: AppColors.softWhite.withOpacity(0.90),
-              fontSize: 10,
+              color: AppColors.softWhite,
+              fontSize: 11,
               fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500,
               height: 1.3,
             ),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 3,
           ),
         ],
       ),
+    );
+  }
+}
+
+class _BottomNavItem extends StatelessWidget {
+  const _BottomNavItem({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: label,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: AppColors.lightGray),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.lightGray,
+                fontSize: 12,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── VIDEO PLAYER WIDGET ────────────────────────────────────────────────────────
+class _VideoPlayerWidget extends StatefulWidget {
+  const _VideoPlayerWidget({required this.videoPath});
+
+  final String videoPath;
+
+  @override
+  State<_VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<_VideoPlayerWidget> {
+  late VideoPlayerController _controller;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset(widget.videoPath)
+      ..initialize().then((_) {
+        if (mounted) {
+          setState(() {
+            _isInitialized = true;
+          });
+          _controller.play();
+          _controller.setLooping(true);
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      return const SizedBox(
+        height: 200,
+        child: Center(
+          child: CircularProgressIndicator(color: AppColors.gold),
+        ),
+      );
+    }
+    return AspectRatio(
+      aspectRatio: _controller.value.aspectRatio,
+      child: VideoPlayer(_controller),
     );
   }
 }

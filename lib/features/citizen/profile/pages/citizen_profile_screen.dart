@@ -1,26 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../../../core/services/profile_service.dart';
+import '../../../../../core/services/profile_database_service.dart';
 import '../../../home/presentation/pages/map_screen.dart';
 import '../../../search/presentation/pages/search_screen.dart';
+import 'edit_citizen_profile_screen.dart';
+import 'privacy_policy_screen.dart';
+import 'terms_of_use_screen.dart';
 
 class CitizenProfileScreen extends StatefulWidget {
-  const CitizenProfileScreen({super.key});
+  const CitizenProfileScreen({
+    super.key,
+    this.showBottomNavigation = true,
+    this.showBackButton = true,
+  });
+
+  final bool showBottomNavigation;
+  final bool showBackButton;
 
   @override
   State<CitizenProfileScreen> createState() => _CitizenProfileScreenState();
 }
 
 class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
+  final ProfileDatabaseService _profileDatabaseService = ProfileDatabaseService();
+  Map<String, dynamic>? _profileData;
+  bool _isProfileLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userId = authProvider.currentUser?.id;
+
+    if (userId == null) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isProfileLoading = false;
+      });
+      return;
+    }
+
+    final profile = await _profileDatabaseService.getProfile(userId);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _profileData = profile;
+      _isProfileLoading = false;
+    });
+  }
+
+  String _displayName(AuthProvider authProvider, AppLocalizations strings) {
+    return _profileData?['full_name']?.toString() ??
+        authProvider.currentUser?.userMetadata?['full_name']?.toString() ??
+        strings.text('user');
+  }
+
+  String _displayPhone(AppLocalizations strings, AuthProvider authProvider) {
+    return _profileData?['phone']?.toString() ??
+        authProvider.currentUser?.userMetadata?['phone']?.toString() ??
+        strings.text('not_informed');
+  }
 
   void _onNavTap(int index) {
     HapticFeedback.lightImpact();
     if (index == 0) {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/citizen_home');
     } else if (index == 1) {
       Navigator.push(
         context,
@@ -45,24 +105,27 @@ class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
     
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
+      floatingActionButton: const GlobalZoomFAB(),
       appBar: AppBar(
         backgroundColor: AppColors.deepBlack,
         elevation: 0,
-        leading: Semantics(
-          button: true,
-          label: 'Voltar',
-          hint: 'Toque para voltar para a tela anterior',
-          child: IconButton(
-            icon: Semantics(
-              label: 'Ícone de voltar',
-              child: const Icon(Icons.arrow_back, color: AppColors.gold),
-            ),
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              Navigator.pop(context);
-            },
-          ),
-        ),
+        leading: widget.showBackButton
+            ? Semantics(
+                button: true,
+                label: 'Voltar',
+                hint: 'Toque para voltar para a tela anterior',
+                child: IconButton(
+                  icon: Semantics(
+                    label: 'Ícone de voltar',
+                    child: const Icon(Icons.arrow_back, color: AppColors.gold),
+                  ),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.pop(context);
+                  },
+                ),
+              )
+            : null,
         title: Semantics(
           header: true,
           label: strings.text('my_profile'),
@@ -86,14 +149,30 @@ class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
                 label: 'Ícone de editar',
                 child: const Icon(Icons.edit, color: AppColors.gold),
               ),
-              onPressed: () {
+              onPressed: () async {
                 HapticFeedback.lightImpact();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(strings.text('profile_edit_soon')),
-                    backgroundColor: AppColors.gold,
+
+                final userId = authProvider.currentUser?.id;
+                if (userId == null) {
+                  return;
+                }
+
+                final updated = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditCitizenProfileScreen(
+                      userId: userId,
+                      initialName: _displayName(authProvider, strings),
+                      initialPhone: _displayPhone(strings, authProvider) == strings.text('not_informed')
+                          ? ''
+                          : _displayPhone(strings, authProvider),
+                    ),
                   ),
                 );
+
+                if (updated == true) {
+                  await _loadProfile();
+                }
               },
             ),
           ),
@@ -143,15 +222,24 @@ class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
                       const SizedBox(height: 16),
                       
                       // Name
-                      Text(
-                        authProvider.currentUser?.userMetadata?['full_name'] ?? strings.text('user'),
-                        style: const TextStyle(
-                          color: AppColors.softWhite,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
+                      _isProfileLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.gold),
+                              ),
+                            )
+                          : Text(
+                              _displayName(authProvider, strings),
+                              style: const TextStyle(
+                                color: AppColors.softWhite,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
                       
                       const SizedBox(height: 8),
                       
@@ -198,23 +286,17 @@ class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
               _buildSection(
                 strings.text('personal_information'),
                 [
-                  _buildInfoItem(strings.text('complete_name'), authProvider.currentUser?.userMetadata?['full_name'] ?? strings.text('not_informed')),
-                  _buildInfoItem(strings.text('email_label'), authProvider.currentUser?.email ?? strings.text('not_informed')),
-                  _buildInfoItem(strings.text('phone'), authProvider.currentUser?.userMetadata?['phone'] ?? strings.text('not_informed')),
-                ],
-              ),
-            
-              const SizedBox(height: 24),
-            
-              // App Settings
-              _buildSection(
-                strings.text('app_settings'),
-                [
-                  _buildSettingItem(
-                    strings.text('notifications'),
-                    strings.text('receive_alerts'),
-                    Icons.notifications_outlined,
-                    true,
+                  _buildInfoItem(
+                    strings.text('complete_name'),
+                    _isProfileLoading ? 'Carregando...' : _displayName(authProvider, strings),
+                  ),
+                  _buildInfoItem(
+                    strings.text('email_label'),
+                    authProvider.currentUser?.email ?? strings.text('not_informed'),
+                  ),
+                  _buildInfoItem(
+                    strings.text('phone'),
+                    _isProfileLoading ? 'Carregando...' : _displayPhone(strings, authProvider),
                   ),
                 ],
               ),
@@ -222,31 +304,52 @@ class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
               const SizedBox(height: 24),
             
               // Support
-            _buildSection(
+              _buildSection(
                 strings.text('support'),
                 [
-                  _buildActionItem(
-                    strings.text('help_center'),
-                    strings.text('faq_support'),
-                    Icons.help_outline,
-                    () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(strings.text('feature_in_development')),
-                          backgroundColor: AppColors.gold,
-                        ),
-                      );
-                    },
-                  ),
                   _buildActionItem(
                     strings.text('contact_us'),
                     strings.text('get_in_touch'),
                     Icons.message_outlined,
-                    () {
+                    () async {
+                      final emailUri = Uri(
+                        scheme: 'mailto',
+                        path: 'virar.t.servicos@gmail.com',
+                        queryParameters: {
+                          'subject': 'Contato pelo app VIRAR',
+                        },
+                      );
+
+                      final gmailComposeUri = Uri.parse(
+                        'https://mail.google.com/mail/?view=cm&fs=1&to=virar.t.servicos@gmail.com&su=${Uri.encodeComponent('Contato pelo app VIRAR')}',
+                      );
+
+                      final openedEmailApp = await launchUrl(
+                        emailUri,
+                        mode: LaunchMode.externalApplication,
+                      );
+
+                      if (openedEmailApp) {
+                        return;
+                      }
+
+                      final openedBrowserFallback = await launchUrl(
+                        gmailComposeUri,
+                        mode: LaunchMode.externalApplication,
+                      );
+
+                      if (openedBrowserFallback) {
+                        return;
+                      }
+
+                      if (!mounted) {
+                        return;
+                      }
+
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(strings.text('feature_in_development')),
-                          backgroundColor: AppColors.gold,
+                        const SnackBar(
+                          content: Text('Não foi possível abrir o aplicativo de e-mail.'),
+                          backgroundColor: Colors.red,
                         ),
                       );
                     },
@@ -256,10 +359,11 @@ class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
                     strings.text('privacy_policy_desc'),
                     Icons.privacy_tip_outlined,
                     () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(strings.text('feature_in_development')),
-                          backgroundColor: AppColors.gold,
+                      HapticFeedback.lightImpact();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PrivacyPolicyScreen(),
                         ),
                       );
                     },
@@ -269,10 +373,11 @@ class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
                     strings.text('terms_of_use_desc'),
                     Icons.description_outlined,
                     () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(strings.text('feature_in_development')),
-                          backgroundColor: AppColors.gold,
+                      HapticFeedback.lightImpact();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TermsOfUseScreen(),
                         ),
                       );
                     },
@@ -317,53 +422,55 @@ class _CitizenProfileScreenState extends State<CitizenProfileScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppColors.deepBlack,
-          border: Border(
-            top: BorderSide(color: AppColors.gold.withOpacity(0.3)),
-          ),
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 3,
-          selectedItemColor: AppColors.gold,
-          unselectedItemColor: AppColors.lightGray,
-          onTap: _onNavTap,
-          items: [
-            BottomNavigationBarItem(
-              icon: Semantics(
-                label: 'Ícone de casa',
-                child: const Icon(Icons.home),
+      bottomNavigationBar: widget.showBottomNavigation
+          ? Container(
+              decoration: BoxDecoration(
+                color: AppColors.deepBlack,
+                border: Border(
+                  top: BorderSide(color: AppColors.gold.withOpacity(0.3)),
+                ),
               ),
-              label: strings.text('home_nav'),
-            ),
-            BottomNavigationBarItem(
-              icon: Semantics(
-                label: 'Ícone de lupa',
-                child: const Icon(Icons.search),
+              child: BottomNavigationBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                type: BottomNavigationBarType.fixed,
+                currentIndex: 3,
+                selectedItemColor: AppColors.gold,
+                unselectedItemColor: AppColors.lightGray,
+                onTap: _onNavTap,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Semantics(
+                      label: 'Ícone de casa',
+                      child: const Icon(Icons.home),
+                    ),
+                    label: strings.text('home_nav'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Semantics(
+                      label: 'Ícone de lupa',
+                      child: const Icon(Icons.search),
+                    ),
+                    label: strings.text('search_nav'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Semantics(
+                      label: 'Ícone de mapa',
+                      child: const Icon(Icons.map_outlined),
+                    ),
+                    label: 'Mapa',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Semantics(
+                      label: 'Ícone de pessoa',
+                      child: const Icon(Icons.person),
+                    ),
+                    label: strings.text('profile_nav'),
+                  ),
+                ],
               ),
-              label: strings.text('search_nav'),
-            ),
-            BottomNavigationBarItem(
-              icon: Semantics(
-                label: 'Ícone de mapa',
-                child: const Icon(Icons.map_outlined),
-              ),
-              label: 'Mapa',
-            ),
-            BottomNavigationBarItem(
-              icon: Semantics(
-                label: 'Ícone de pessoa',
-                child: const Icon(Icons.person),
-              ),
-              label: strings.text('profile_nav'),
-            ),
-          ],
-        ),
-      ),
+            )
+          : null,
     );
   }
 

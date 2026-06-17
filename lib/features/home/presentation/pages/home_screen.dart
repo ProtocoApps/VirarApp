@@ -4,12 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../../citizen/home/pages/company_details_screen.dart';
 import '../../../citizen/profile/pages/citizen_profile_screen.dart';
 import 'map_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.showBottomNavigation = true});
+
+  final bool showBottomNavigation;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -27,6 +30,16 @@ class _HomeScreenState extends State<HomeScreen>
     'wake_ceremony',
     'flowers_tributes',
     'cemetery_burial',
+    'documentation_bureaucracy',
+    'family_support',
+    'funeral_transport',
+    'post_death_services',
+    'grave_maintenance',
+    'digital_memorial',
+    'memorials_headstones',
+    'advance_planning',
+    'wake_buffet',
+    'social_assistance',
     'pet_funeral_services',
   ];
 
@@ -36,6 +49,16 @@ class _HomeScreenState extends State<HomeScreen>
     'wake_ceremony': 'Velório e Cerimônia',
     'flowers_tributes': 'Flores e Homenagens',
     'cemetery_burial': 'Cemitério e Sepultamento',
+    'documentation_bureaucracy': 'Documentação e Burocracia',
+    'family_support': 'Apoio à Família',
+    'funeral_transport': 'Transporte Funerário',
+    'post_death_services': 'Serviços Pós-Falecimento',
+    'grave_maintenance': 'Manutenção de Túmulos',
+    'digital_memorial': 'Memorial Digital',
+    'memorials_headstones': 'Memoriais e Lápides',
+    'advance_planning': 'Planejamento Antecipado',
+    'wake_buffet': 'Buffet para Velório e Cerimônias',
+    'social_assistance': 'Assistência Social',
     'pet_funeral_services': 'Serviços Funerários para Pets 🐾',
   };
 
@@ -174,40 +197,42 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            _buildHeader(context),
-            
-            // Main Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Search Section
-                    _buildSearchSection(strings),
-                    
-                    const SizedBox(height: 32),
+      floatingActionButton: const GlobalZoomFAB(),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              // Header
+              _buildHeader(context),
+              
+              // Main Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Search Section
+                      _buildSearchSection(strings),
+                      
+                      const SizedBox(height: 32),
 
-                    // Categories Section
-                    _buildCategoriesSection(strings),
-                    
-                    const SizedBox(height: 32),
-                    
-                    // Featured Funeral Homes
-                    _buildFeaturedSection(context, strings),
-                  ],
+                      // Categories Section
+                      _buildCategoriesSection(strings),
+                      
+                      const SizedBox(height: 32),
+                      
+                      // Featured Funeral Homes
+                      _buildFeaturedSection(context, strings),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
-      // Bottom Navigation
-      bottomNavigationBar: _buildBottomNavigation(),
+      bottomNavigationBar: widget.showBottomNavigation ? _buildBottomNavigation() : null,
     );
   }
 

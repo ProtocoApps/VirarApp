@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../providers/auth_provider.dart';
 import '../../../../../core/services/profile_service.dart';
 
@@ -39,6 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
+      floatingActionButton: const GlobalZoomFAB(),
       appBar: AppBar(
         backgroundColor: AppColors.deepBlack,
         elevation: 0,

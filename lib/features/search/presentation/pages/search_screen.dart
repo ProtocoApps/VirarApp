@@ -4,14 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../../citizen/home/pages/company_details_screen.dart';
 import '../../../citizen/profile/pages/citizen_profile_screen.dart';
 import '../../../home/presentation/pages/map_screen.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key, this.initialCategory});
+  const SearchScreen({super.key, this.initialCategory, this.showBottomNavigation = true});
 
   final String? initialCategory;
+  final bool showBottomNavigation;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -28,7 +30,7 @@ class _SearchScreenState extends State<SearchScreen>
   void _onNavTap(int index) {
     HapticFeedback.lightImpact();
     if (index == 0) {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/citizen_home');
     } else if (index == 2) {
       Navigator.push(
         context,
@@ -183,6 +185,7 @@ class _SearchScreenState extends State<SearchScreen>
 
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
+      floatingActionButton: const GlobalZoomFAB(),
       body: SafeArea(
         child: Column(
           children: [
@@ -199,56 +202,58 @@ class _SearchScreenState extends State<SearchScreen>
           ],
         ),
       ),
-      bottomNavigationBar: Semantics(
-        label: 'Barra de navegação inferior',
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.deepBlack,
-            border: Border(
-              top: BorderSide(color: AppColors.gold.withOpacity(0.3)),
-            ),
-          ),
-          child: BottomNavigationBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            type: BottomNavigationBarType.fixed,
-            currentIndex: 1,
-            selectedItemColor: AppColors.gold,
-            unselectedItemColor: AppColors.lightGray,
-            onTap: _onNavTap,
-            items: [
-              BottomNavigationBarItem(
-                icon: Semantics(
-                  label: 'Ícone de casa',
-                  child: const Icon(Icons.home),
+      bottomNavigationBar: widget.showBottomNavigation
+          ? Semantics(
+              label: 'Barra de navegação inferior',
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.deepBlack,
+                  border: Border(
+                    top: BorderSide(color: AppColors.gold.withOpacity(0.3)),
+                  ),
                 ),
-                label: strings.text('home_nav'),
-              ),
-              BottomNavigationBarItem(
-                icon: Semantics(
-                  label: 'Ícone de lupa',
-                  child: const Icon(Icons.search),
+                child: BottomNavigationBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  type: BottomNavigationBarType.fixed,
+                  currentIndex: 1,
+                  selectedItemColor: AppColors.gold,
+                  unselectedItemColor: AppColors.lightGray,
+                  onTap: _onNavTap,
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: Semantics(
+                        label: 'Ícone de casa',
+                        child: const Icon(Icons.home),
+                      ),
+                      label: strings.text('home_nav'),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Semantics(
+                        label: 'Ícone de lupa',
+                        child: const Icon(Icons.search),
+                      ),
+                      label: strings.text('search_nav'),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Semantics(
+                        label: 'Ícone de mapa',
+                        child: const Icon(Icons.map_outlined),
+                      ),
+                      label: 'Mapa',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Semantics(
+                        label: 'Ícone de pessoa',
+                        child: const Icon(Icons.person),
+                      ),
+                      label: strings.text('profile_nav'),
+                    ),
+                  ],
                 ),
-                label: strings.text('search_nav'),
               ),
-              BottomNavigationBarItem(
-                icon: Semantics(
-                  label: 'Ícone de mapa',
-                  child: const Icon(Icons.map_outlined),
-                ),
-                label: 'Mapa',
-              ),
-              BottomNavigationBarItem(
-                icon: Semantics(
-                  label: 'Ícone de pessoa',
-                  child: const Icon(Icons.person),
-                ),
-                label: strings.text('profile_nav'),
-              ),
-            ],
-          ),
-        ),
-      ),
+            )
+          : null,
     );
   }
 

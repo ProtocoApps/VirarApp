@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../../core/theme/app_theme.dart';
 import '../../../../../core/services/profile_service.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 
 class ProfileSelectionScreen extends StatelessWidget {
   const ProfileSelectionScreen({super.key});
@@ -9,6 +10,7 @@ class ProfileSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: const GlobalZoomFAB(),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(

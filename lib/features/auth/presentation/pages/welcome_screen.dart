@@ -7,6 +7,7 @@ import '../../../../../core/localization/app_localizations.dart';
 import '../../../../../core/providers/app_language_provider.dart';
 import '../../../../../core/theme/app_theme.dart';
 import '../../../../../core/constants/app_constants.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -149,6 +150,7 @@ class WelcomeScreen extends StatelessWidget {
         languageProvider.currentLanguage == AppLanguage.libras;
 
     return Scaffold(
+      floatingActionButton: const GlobalZoomFAB(),
       body: Stack(
         children: [
           // Background Image with Blur
@@ -241,7 +243,7 @@ class WelcomeScreen extends StatelessWidget {
                       ],
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           strings.text('welcome_title'),
@@ -283,10 +285,11 @@ class WelcomeScreen extends StatelessWidget {
                             ),
                           ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
                                 'Acessibilidade',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: AppColors.softWhite,
                                   fontSize: 18,
@@ -297,6 +300,7 @@ class WelcomeScreen extends StatelessWidget {
                               const SizedBox(height: 8),
                               Text(
                                 'Ative o TalkBack para melhorar a acessibilidade visual.',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: AppColors.softWhite.withOpacity(0.78),
                                   fontSize: 13,
@@ -353,6 +357,7 @@ class WelcomeScreen extends StatelessWidget {
                                 const SizedBox(height: 10),
                                 Text(
                                   'Modo acessível ativado.',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: AppColors.gold,
                                     fontSize: 12,

@@ -9,6 +9,10 @@ import '../../../../../core/localization/app_language.dart';
 import '../../../../../core/providers/app_language_provider.dart';
 import '../providers/auth_provider.dart';
 import '../../../../../core/services/profile_service.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
+import 'partner_terms_of_use_screen.dart';
+import 'register_privacy_policy_screen.dart';
+import 'register_terms_of_use_screen.dart';
 
 // Custom TextInputFormatter for phone
 class PhoneFormatter extends TextInputFormatter {
@@ -135,8 +139,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       controller.addListener(_refreshFormState);
       controller.addListener(_clearAuthError);
     }
-    _termsRecognizer.onTap = () => _showLinkPlaceholder('Termos de Uso');
-    _privacyRecognizer.onTap = () => _showLinkPlaceholder('Política de Privacidade');
+    _termsRecognizer.onTap = () {
+      HapticFeedback.lightImpact();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const RegisterTermsOfUseScreen(),
+        ),
+      );
+    };
+    _privacyRecognizer.onTap = () {
+      HapticFeedback.lightImpact();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const RegisterPrivacyPolicyScreen(),
+        ),
+      );
+    };
   }
 
   void _clearAuthError() {
@@ -185,6 +205,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
+      floatingActionButton: const GlobalZoomFAB(),
       appBar: AppBar(
         backgroundColor: AppColors.deepBlack,
         elevation: 0,
@@ -282,7 +303,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Conectando você a serviços funerários com respeito, agilidade e dignidade.',
+                          'Conectamos você a serviços, apoio e cuidado com respeito e agilidade.',
                           style: TextStyle(
                             color: AppColors.lightGray.withOpacity(0.8),
                             fontSize: 14,

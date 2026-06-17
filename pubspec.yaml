@@ -52,6 +52,9 @@ dependencies:
   # Image Picker
   image_picker: ^1.0.4
   
+  # Video Player
+  video_player: ^2.8.0
+  
   # Rating
   flutter_rating_bar: ^4.0.1
 
@@ -61,21 +64,21 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   build_runner: ^2.4.7
   hive_generator: ^2.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/LOGO app.png"
+  adaptive_icon_background: "#1A1614"
+  adaptive_icon_foreground: "assets/images/LOGO app.png"
 
 flutter:
   uses-material-design: true
-  
+
   assets:
     - assets/
     - assets/images/
-    - assets/images/NOME COMPLETO.gif
-    - assets/images/CEP.gif
-    - assets/images/BAIRRO.gif
-    - assets/images/CIDADE.gif
-    - assets/images/COMPLEMENTO.gif
-    - assets/images/SENHA.gif
-    - assets/images/CRIAR SENHA.gif
-    - assets/images/CONFIRMAR SENHA.gif
-  
+
   fonts:
     - family: Poppins

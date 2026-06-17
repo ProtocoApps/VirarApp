@@ -2,19 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../../../../core/services/profile_service.dart';
 import 'company_details_screen.dart';
 import '../../profile/pages/citizen_profile_screen.dart';
+import '../../../../../features/products/presentation/pages/carrinho_screen.dart';
+import '../../../../../features/products/presentation/providers/carrinho_provider.dart';
 
-class CitizenHomeScreen extends StatefulWidget {
+class CitizenHomeScreen extends ConsumerStatefulWidget {
   const CitizenHomeScreen({super.key});
 
   @override
-  State<CitizenHomeScreen> createState() => _CitizenHomeScreenState();
+  ConsumerState<CitizenHomeScreen> createState() => _CitizenHomeScreenState();
 }
 
-class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
+class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'Todos';
   bool _hasShownWelcomeSnackBar = false;
@@ -27,20 +31,20 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
     'Velório e Cerimônia',
     'Flores e Homenagens',
     'Cemitério e Sepultamento',
-    'Documentação',
+    // 'Documentação',
     'Documentação e Burocracia',
     'Apoio à Família',
-    'Família',
-    'Transporte',
+    // 'Família',
+    // 'Transporte',
     'Transporte Funerário',
-    'Pós-Falecimento',
+    // 'Pós-Falecimento',
     'Serviços Pós-Falecimento',
-    'Manutenção',
+    // 'Manutenção',
     'Manutenção de Túmulos',
-    'Memorial',
+    // 'Memorial',
     'Memorial Digital',
     'Memoriais e Lápides',
-    'Planejamento',
+    // 'Planejamento',
     'Planejamento Antecipado',
     'Buffet para Velório e Cerimônias',
     'Assistência Social',
@@ -215,6 +219,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: const GlobalZoomFAB(),
       body: Stack(
         children: [
           Container(
@@ -248,6 +253,66 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
                             ),
                           ),
                           const Spacer(),
+                          // Ícone do carrinho
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final carrinhoCount = ref.watch(carrinhoCountProvider);
+                              
+                              return GestureDetector(
+                                onTap: () {
+                                  HapticFeedback.lightImpact();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const CarrinhoScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.gold.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.shopping_cart_outlined,
+                                        color: AppColors.gold,
+                                      ),
+                                    ),
+                                    if (carrinhoCount > 0)
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          constraints: const BoxConstraints(
+                                            minWidth: 18,
+                                            minHeight: 18,
+                                          ),
+                                          child: Text(
+                                            carrinhoCount > 99 ? '99+' : carrinhoCount.toString(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 12),
                           GestureDetector(
                             onTap: _navigateToProfile,
                             child: Container(

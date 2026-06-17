@@ -116,6 +116,22 @@ class AuthProvider extends ChangeNotifier {
     return 'Erro ao entrar. Tente novamente.';
   }
 
+  String _mapResetPasswordError(Object error) {
+    if (_isNetworkError(error)) {
+      return 'Sem conexão com a internet ou com o servidor. Verifique sua rede e tente novamente.';
+    }
+
+    if (error is AuthApiException) {
+      return error.message;
+    }
+
+    if (error is AuthException) {
+      return error.message;
+    }
+
+    return 'Não foi possível enviar o e-mail de recuperação. Tente novamente.';
+  }
+
   Future<bool> signIn(String email, String password) async {
     _setLoading(true);
     _setError(null);
@@ -136,6 +152,24 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _setError(_mapSignInError(e));
       if (kDebugMode) print('Login error: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> resetPassword(String email) async {
+    _setLoading(true);
+    _setError(null);
+
+    final normalizedEmail = email.trim().toLowerCase();
+
+    try {
+      await _supabaseService.resetPassword(normalizedEmail);
+      return true;
+    } catch (e) {
+      _setError(_mapResetPasswordError(e));
+      if (kDebugMode) print('Reset password error: $e');
       return false;
     } finally {
       _setLoading(false);

@@ -36,7 +36,7 @@ class AppLocalizations {
       AppLanguage.spanish: 'Apoyo en los momentos\nmás difíciles',
     },
     'welcome_description': {
-      AppLanguage.portuguese: 'Conectamos você a serviços funerários com respeito e agilidade.',
+      AppLanguage.portuguese: 'Conectamos você a serviços, apoio e cuidado com respeito e agilidade.',
       AppLanguage.english: 'We connect you to trusted funeral services with respect, agility, and care in every detail.',
       AppLanguage.spanish: 'Lo conectamos con servicios funerarios confiables, con respeto, agilidad y cuidado en cada detalle.',
     },
@@ -66,9 +66,9 @@ class AppLocalizations {
       AppLanguage.spanish: 'Bienvenido a VIRAR',
     },
     'login_subtitle': {
-      AppLanguage.portuguese: 'Serviços funerais com dignidade e respeito',
-      AppLanguage.english: 'Funeral services with dignity and respect',
-      AppLanguage.spanish: 'Servicios funerarios con dignidad y respeto',
+      AppLanguage.portuguese: 'Soluções de cuidado, apoio e serviços com dignidade',
+      AppLanguage.english: 'Soluções de cuidado, apoio e serviços com dignidade',
+      AppLanguage.spanish: 'Soluções de cuidado, apoio e serviços com dignidade',
     },
     'email_label': {
       AppLanguage.portuguese: 'E-mail',
@@ -259,6 +259,56 @@ class AppLocalizations {
       AppLanguage.portuguese: 'Cemitério e Sepultamento',
       AppLanguage.english: 'Cemetery and Burial',
       AppLanguage.spanish: 'Cementerio y Sepultura',
+    },
+    'documentation_bureaucracy': {
+      AppLanguage.portuguese: 'Documentação e Burocracia',
+      AppLanguage.english: 'Documentation and Bureaucracy',
+      AppLanguage.spanish: 'Documentación y Burocracia',
+    },
+    'family_support': {
+      AppLanguage.portuguese: 'Apoio à Família',
+      AppLanguage.english: 'Family Support',
+      AppLanguage.spanish: 'Apoyo a la Familia',
+    },
+    'funeral_transport': {
+      AppLanguage.portuguese: 'Transporte Funerário',
+      AppLanguage.english: 'Funeral Transport',
+      AppLanguage.spanish: 'Transporte Funerario',
+    },
+    'post_death_services': {
+      AppLanguage.portuguese: 'Serviços Pós-Falecimento',
+      AppLanguage.english: 'Post-Death Services',
+      AppLanguage.spanish: 'Servicios Post-Fallecimiento',
+    },
+    'grave_maintenance': {
+      AppLanguage.portuguese: 'Manutenção de Túmulos',
+      AppLanguage.english: 'Grave Maintenance',
+      AppLanguage.spanish: 'Mantenimiento de Tumbas',
+    },
+    'digital_memorial': {
+      AppLanguage.portuguese: 'Memorial Digital',
+      AppLanguage.english: 'Digital Memorial',
+      AppLanguage.spanish: 'Memorial Digital',
+    },
+    'memorials_headstones': {
+      AppLanguage.portuguese: 'Memoriais e Lápides',
+      AppLanguage.english: 'Memorials and Headstones',
+      AppLanguage.spanish: 'Memoriales y Lápidas',
+    },
+    'advance_planning': {
+      AppLanguage.portuguese: 'Planejamento Antecipado',
+      AppLanguage.english: 'Advance Planning',
+      AppLanguage.spanish: 'Planificación Anticipada',
+    },
+    'wake_buffet': {
+      AppLanguage.portuguese: 'Buffet para Velório e Cerimônias',
+      AppLanguage.english: 'Buffet for Wake and Ceremonies',
+      AppLanguage.spanish: 'Buffet para Velorio y Ceremonias',
+    },
+    'social_assistance': {
+      AppLanguage.portuguese: 'Assistência Social',
+      AppLanguage.english: 'Social Assistance',
+      AppLanguage.spanish: 'Asistencia Social',
     },
     'pet_funeral_services': {
       AppLanguage.portuguese: 'Serviços Funerários para Pets 🐾',

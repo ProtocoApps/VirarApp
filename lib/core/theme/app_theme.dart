@@ -70,7 +70,6 @@ class AppTheme {
           size: 24,
         ),
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
         ),
       ),

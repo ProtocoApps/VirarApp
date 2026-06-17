@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../auth/presentation/widgets/auth_text_field.dart';
 
@@ -25,9 +26,153 @@ class _CitizenLoginScreenState extends State<CitizenLoginScreen> {
     super.dispose();
   }
 
+  Future<void> _showForgotPasswordDialog() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final emailController = TextEditingController(text: _emailController.text.trim());
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.graphiteGray,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: AppColors.gold.withOpacity(0.2)),
+          ),
+          title: const Text(
+            'Recuperar senha',
+            style: TextStyle(
+              color: AppColors.softWhite,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Digite seu e-mail para receber o link de recuperação.',
+                  style: TextStyle(
+                    color: AppColors.lightGray.withOpacity(0.9),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: const TextStyle(
+                    color: AppColors.softWhite,
+                    fontFamily: 'Poppins',
+                  ),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: AppColors.deepBlack,
+                    hintText: 'seu@email.com',
+                    hintStyle: TextStyle(
+                      color: AppColors.lightGray.withOpacity(0.5),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppColors.gold.withOpacity(0.3)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppColors.gold.withOpacity(0.3)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.gold),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Digite seu e-mail';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Digite um e-mail válido';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(
+                  color: AppColors.lightGray,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ),
+            Consumer<AuthProvider>(
+              builder: (context, provider, child) {
+                return ElevatedButton(
+                  onPressed: provider.isLoading
+                      ? null
+                      : () async {
+                          if (!formKey.currentState!.validate()) {
+                            return;
+                          }
+                          final success = await provider.resetPassword(emailController.text.trim());
+                          if (success) {
+                            Navigator.of(dialogContext).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('E-mail de recuperação enviado! Verifique sua caixa de entrada.'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(dialogContext).showSnackBar(
+                              SnackBar(
+                                content: Text(provider.errorMessage ?? 'Erro ao enviar e-mail'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.gold,
+                    foregroundColor: AppColors.deepBlack,
+                  ),
+                  child: provider.isLoading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.deepBlack,
+                          ),
+                        )
+                      : const Text(
+                          'Enviar',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: const GlobalZoomFAB(),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -87,7 +232,7 @@ class _CitizenLoginScreenState extends State<CitizenLoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Encontre os melhores serviços funerários',
+                      'Soluções de cuidado, apoio e serviços com dignidade',
                       style: TextStyle(
                         color: AppColors.lightGray.withOpacity(0.8),
                         fontSize: 16,
@@ -153,7 +298,8 @@ class _CitizenLoginScreenState extends State<CitizenLoginScreen> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            // TODO: Implement forgot password
+                            HapticFeedback.lightImpact();
+                            _showForgotPasswordDialog();
                           },
                           child: const Text(
                             'Esqueci minha senha',

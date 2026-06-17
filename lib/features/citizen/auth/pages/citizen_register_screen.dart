@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../../../auth/presentation/providers/auth_provider.dart';
 
 class CitizenRegisterScreen extends StatefulWidget {
@@ -34,6 +35,7 @@ class _CitizenRegisterScreenState extends State<CitizenRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: const GlobalZoomFAB(),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

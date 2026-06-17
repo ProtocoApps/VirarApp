@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../../core/theme/app_theme.dart';
+import '../../../../../core/widgets/global_zoom_fab.dart';
 import '../../../../../core/services/profile_service.dart';
 
 class EntrepreneurHomeScreen extends StatefulWidget {
@@ -92,6 +93,7 @@ class _EntrepreneurHomeScreenState extends State<EntrepreneurHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: const GlobalZoomFAB(),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
