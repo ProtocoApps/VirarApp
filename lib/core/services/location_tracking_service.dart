@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -31,7 +32,7 @@ class LocationTrackingService {
       );
       return LatLng(position.latitude, position.longitude);
     } catch (e) {
-      print('Erro ao obter localização: $e');
+      if (kDebugMode) print('Erro ao obter localização: $e');
       return null;
     }
   }
@@ -40,7 +41,7 @@ class LocationTrackingService {
     try {
       final hasPermission = await requestLocationPermission();
       if (!hasPermission) {
-        print('Permissão de localização negada');
+        if (kDebugMode) print('Permissão de localização negada');
         return;
       }
 
@@ -54,11 +55,11 @@ class LocationTrackingService {
           _userLocationController.add(LatLng(position.latitude, position.longitude));
         },
         onError: (error) {
-          print('Erro ao obter localização: $error');
+          if (kDebugMode) print('Erro ao obter localização: $error');
         },
       );
     } catch (e) {
-      print('Erro ao iniciar rastreamento: $e');
+      if (kDebugMode) print('Erro ao iniciar rastreamento: $e');
     }
   }
 

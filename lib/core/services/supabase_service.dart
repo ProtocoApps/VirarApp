@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../constants/supabase_constants.dart';
 
@@ -61,7 +62,7 @@ class SupabaseService {
           .single();
       return response;
     } catch (e) {
-      print('Error getting user profile: $e');
+      if (kDebugMode) print('Error getting user profile: $e');
       return null;
     }
   }
@@ -75,7 +76,7 @@ class SupabaseService {
             .upsert(data);
       }
     } catch (e) {
-      print('Error updating user profile: $e');
+      if (kDebugMode) print('Error updating user profile: $e');
       rethrow;
     }
   }

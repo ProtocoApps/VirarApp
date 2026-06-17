@@ -44,7 +44,7 @@ class _AccessibilityShellScreenState extends State<AccessibilityShellScreen> {
         index: _currentIndex,
         children: pages,
       ),
-      floatingActionButton: const GlobalZoomFAB(),
+      floatingActionButton: _currentIndex != 1 ? const GlobalZoomFAB() : null,
       bottomNavigationBar: Semantics(
         label: 'Barra de navegação inferior',
         child: Container(

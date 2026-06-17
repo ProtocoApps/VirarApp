@@ -25,7 +25,7 @@ class TextScaleProvider extends ChangeNotifier {
   }
 
   Future<void> setScale(double value) async {
-    final clamped = value.clamp(_scale, maxScale);
+    final clamped = value.clamp(minScale, maxScale);
     if ((clamped - _scale).abs() < 0.001) return;
     _scale = clamped;
     notifyListeners();

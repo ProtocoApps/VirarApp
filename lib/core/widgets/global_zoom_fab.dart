@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart' as provider;
@@ -54,6 +55,7 @@ class GlobalZoomFAB extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => const _ZoomBottomSheet(),
     );
@@ -68,14 +70,12 @@ class _ZoomBottomSheet extends StatefulWidget {
 }
 
 class _ZoomBottomSheetState extends State<_ZoomBottomSheet> {
-  late double _initialScale;
   late double _sliderValue;
 
   @override
   void initState() {
     super.initState();
     final textScale = provider.Provider.of<TextScaleProvider>(context, listen: false);
-    _initialScale = textScale.scale;
     _sliderValue = textScale.scale;
   }
 
@@ -94,20 +94,24 @@ class _ZoomBottomSheetState extends State<_ZoomBottomSheet> {
     final bottomPad = MediaQuery.of(context).viewInsets.bottom +
         MediaQuery.of(context).padding.bottom;
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.darkBrown,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        border: Border(
-          top: BorderSide(color: AppColors.gold, width: 0.5),
-          left: BorderSide(color: AppColors.gold, width: 0.5),
-          right: BorderSide(color: AppColors.gold, width: 0.5),
-        ),
-      ),
-      padding: EdgeInsets.fromLTRB(24, 20, 24, 24 + bottomPad),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.deepBlack.withOpacity(0.72),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            border: const Border(
+              top: BorderSide(color: AppColors.gold, width: 0.5),
+              left: BorderSide(color: AppColors.gold, width: 0.5),
+              right: BorderSide(color: AppColors.gold, width: 0.5),
+            ),
+          ),
+          padding: EdgeInsets.fromLTRB(24, 20, 24, 24 + bottomPad),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
           // Handle bar
           Container(
             width: 40,
@@ -249,18 +253,16 @@ class _ZoomBottomSheetState extends State<_ZoomBottomSheet> {
                   ),
                   child: Slider(
                     value: _sliderValue,
-                    min: _initialScale,
+                    min: TextScaleProvider.minScale,
                     max: TextScaleProvider.maxScale,
-                    divisions: (((TextScaleProvider.maxScale - _initialScale) / 0.05).round()).clamp(1, 10),
+                    divisions: 10,
                     label: _scaleLabel,
-                    onChanged: _sliderValue >= TextScaleProvider.maxScale
-                        ? null
-                        : (v) {
-                            HapticFeedback.selectionClick();
-                            setState(() => _sliderValue = v);
-                            provider.Provider.of<TextScaleProvider>(context, listen: false)
-                                .setScale(v);
-                          },
+                    onChanged: (v) {
+                      HapticFeedback.selectionClick();
+                      setState(() => _sliderValue = v);
+                      provider.Provider.of<TextScaleProvider>(context, listen: false)
+                          .setScale(v);
+                    },
                   ),
                 ),
               ),
@@ -290,33 +292,37 @@ class _ZoomBottomSheetState extends State<_ZoomBottomSheet> {
 
           const SizedBox(height: 20),
 
-          if (_sliderValue >= TextScaleProvider.maxScale)
-            Container(
+          if (_sliderValue > TextScaleProvider.minScale)
+            SizedBox(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.gold.withOpacity(0.3)),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.check_circle_outline, color: AppColors.gold, size: 16),
-                  SizedBox(width: 8),
-                  Text(
-                    'Tamanho máximo atingido',
-                    style: TextStyle(
-                      color: AppColors.gold,
-                      fontSize: 13,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w600,
-                    ),
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _sliderValue = TextScaleProvider.minScale);
+                  provider.Provider.of<TextScaleProvider>(context, listen: false)
+                      .setScale(TextScaleProvider.minScale);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.gold.withOpacity(0.5)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ],
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                icon: const Icon(Icons.refresh, color: AppColors.gold, size: 18),
+                label: const Text(
+                  'Restaurar tamanho padrão',
+                  style: TextStyle(
+                    color: AppColors.gold,
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
               ),
             ),
-        ],
+          ],
+          ),
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -236,7 +237,7 @@ class _MapScreenState extends State<MapScreen> {
       await _locationService.startLocationTracking();
       _subscribeToUserLocation();
     } catch (e) {
-      print('Erro ao inicializar app: $e');
+      if (kDebugMode) print('Erro ao inicializar app: $e');
     }
   }
 
@@ -315,7 +316,7 @@ class _MapScreenState extends State<MapScreen> {
         }
       }
     } catch (e) {
-      print('Erro ao buscar dados de rota: $e');
+      if (kDebugMode) print('Erro ao buscar dados de rota: $e');
     }
   }
 
@@ -803,7 +804,7 @@ class _MapScreenState extends State<MapScreen> {
             }
           },
           onError: (error) {
-            print('Erro ao rastrear funerária: $error');
+            if (kDebugMode) print('Erro ao rastrear funerária: $error');
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -908,14 +909,14 @@ class _MapScreenState extends State<MapScreen> {
           '${destination.longitude},${destination.latitude}'
           '?overview=full&geometries=geojson';
 
-      print('Buscando rota real: $url');
+      if (kDebugMode) print('Buscando rota real: $url');
 
       final response = await http.get(Uri.parse(url)).timeout(
         const Duration(seconds: 10),
         onTimeout: () => http.Response('Timeout', 408),
       );
 
-      print('Status da resposta: ${response.statusCode}');
+      if (kDebugMode) print('Status da resposta: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -935,7 +936,7 @@ class _MapScreenState extends State<MapScreen> {
                 return LatLng(lat, lng);
               }).toList();
               
-              print('Rota real obtida com ${routePoints.length} pontos');
+              if (kDebugMode) print('Rota real obtida com ${routePoints.length} pontos');
               
               if (routePoints.isNotEmpty && mounted) {
                 setState(() {
@@ -950,7 +951,7 @@ class _MapScreenState extends State<MapScreen> {
         }
       }
       
-      print('Usando fallback com curvas');
+      if (kDebugMode) print('Usando fallback com curvas');
       // Fallback: usar interpolação com curvas se API falhar
       final List<LatLng> interpolatedRoute = _generateInterpolatedRoute(origin, destination);
       setState(() {
@@ -959,7 +960,7 @@ class _MapScreenState extends State<MapScreen> {
         _animatedCompanyPosition = interpolatedRoute.first;
       });
     } catch (e) {
-      print('Erro ao buscar rota real: $e');
+      if (kDebugMode) print('Erro ao buscar rota real: $e');
       // Fallback: usar rota com curvas
       final List<LatLng> interpolatedRoute = _generateInterpolatedRoute(origin, destination);
       setState(() {

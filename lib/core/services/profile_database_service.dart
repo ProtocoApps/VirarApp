@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../constants/supabase_constants.dart';
 
@@ -76,9 +77,9 @@ class ProfileDatabaseService {
         await _client.from('profiles').upsert(fallbackProfileData);
       }
 
-      print('Profile created successfully for user: $userId');
+      if (kDebugMode) print('Profile created successfully for user: $userId');
     } catch (e) {
-      print('Error creating profile: $e');
+      if (kDebugMode) print('Error creating profile: $e');
       rethrow;
     }
   }
@@ -92,7 +93,7 @@ class ProfileDatabaseService {
           .single();
       return response;
     } catch (e) {
-      print('Error getting profile: $e');
+      if (kDebugMode) print('Error getting profile: $e');
       return null;
     }
   }
@@ -105,7 +106,7 @@ class ProfileDatabaseService {
           .order('created_at', ascending: false);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      print('Error getting all profiles: $e');
+      if (kDebugMode) print('Error getting all profiles: $e');
       return [];
     }
   }
@@ -117,9 +118,9 @@ class ProfileDatabaseService {
           .from('profiles')
           .update(data)
           .eq('id', userId);
-      print('Profile updated successfully for user: $userId');
+      if (kDebugMode) print('Profile updated successfully for user: $userId');
     } catch (e) {
-      print('Error updating profile: $e');
+      if (kDebugMode) print('Error updating profile: $e');
       rethrow;
     }
   }
@@ -130,9 +131,9 @@ class ProfileDatabaseService {
           .from('profiles')
           .delete()
           .eq('id', userId);
-      print('Profile deleted successfully for user: $userId');
+      if (kDebugMode) print('Profile deleted successfully for user: $userId');
     } catch (e) {
-      print('Error deleting profile: $e');
+      if (kDebugMode) print('Error deleting profile: $e');
       rethrow;
     }
   }

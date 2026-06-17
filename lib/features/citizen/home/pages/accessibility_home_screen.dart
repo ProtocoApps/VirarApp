@@ -52,6 +52,7 @@ class AccessibilityHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = provider.Provider.of<AppLanguageProvider>(context).currentLanguage;
+    final textScale = provider.Provider.of<TextScaleProvider>(context).scale;
 
     return Scaffold(
       backgroundColor: AppColors.deepBlack,
@@ -100,7 +101,7 @@ class AccessibilityHomeScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // ── Services grid ────────────────────────────────────────
-                  _buildServicesGrid(lang),
+                  _buildServicesGrid(lang, textScale),
 
                   const SizedBox(height: 32),
                 ],
@@ -243,15 +244,16 @@ class AccessibilityHomeScreen extends StatelessWidget {
   }
 
   // ── SERVICES GRID ─────────────────────────────────────────────────────────
-  Widget _buildServicesGrid(AppLanguage lang) {
+  Widget _buildServicesGrid(AppLanguage lang, double textScale) {
+    final extraScale = textScale - 1.0;
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
         crossAxisSpacing: 10,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.64,
+        mainAxisSpacing: 16 + extraScale * 32,
+        childAspectRatio: 0.64 / textScale,
       ),
       itemCount: _services.length,
       itemBuilder: (context, index) {
@@ -416,17 +418,20 @@ class _ServiceTile extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 7),
-          Text(
-            label,
-            style: TextStyle(
-              color: AppColors.softWhite,
-              fontSize: 11,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w500,
-              height: 1.3,
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.softWhite,
+                fontSize: 11,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w500,
+                height: 1.3,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            maxLines: 3,
           ),
         ],
       ),
